@@ -61,7 +61,11 @@ class Interface extends EventEmitter
 	whenDone: (listener) ->
 		# check if we have a listener
 		if typeof listener is 'function'
-			@on('done', listener.bind(@))
+			queuedListener = (args...) ->
+				process.nextTick () ->
+					listener(args...)
+
+			@on('done', queuedListener.bind(@))
 
 		# Chain
 		@
@@ -72,7 +76,11 @@ class Interface extends EventEmitter
 	onceDone: (listener) ->
 		# check if we have a listener
 		if typeof listener is 'function'
-			@once('done', listener)
+			queuedListener = (args...) ->
+				process.nextTick () ->
+					listener(args...)
+
+			@once('done', queuedListener)
 
 		# Chain
 		@
